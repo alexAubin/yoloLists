@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% for list in lists %}
+    <h1>{{ list.name }}</h1>
+    <p>{{ list.description }}</p>
+    <a href="{{ list.web_url }}">thelink</a>
+{% endfor %}
+
+{% endblock %}

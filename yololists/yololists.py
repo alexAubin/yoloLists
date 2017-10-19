@@ -1,10 +1,12 @@
 
-from flask import Flask
+from flask import Flask, render_template
 from mailman import Mailman
 
 app = Flask(__name__)
 
 
 @app.route('/')
-def mainpage():
-    return str(Mailman().lists())
+def index():
+    data = { "lists": Mailman().lists() }
+
+    return render_template("index.html", **data)

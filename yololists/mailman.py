@@ -7,17 +7,11 @@ import time
 import sys
 sys.path.append("/usr/lib/mailman/")
 
-from Mailman import mm_cfg
-from Mailman import Utils
-from Mailman import MailList
-from Mailman import Errors
-from Mailman import i18n
+from Mailman import mm_cfg, Utils, MailList, Errors
+from Mailman.UserDesc import UserDesc
 from Mailman.htmlformat import *
 from Mailman.Logging.Syslog import syslog
 
-# Set up i18n
-_ = i18n._
-i18n.set_language(mm_cfg.DEFAULT_SERVER_LANGUAGE)
 
 
 class Mailman():
@@ -34,14 +28,19 @@ class Mailman():
         return Utils.get_site_email()
 
 
-    def list(self, listname):
+    def list(self, list_name):
 
-        mlist = MailList.MailList(listname, lock=0)
+        assert isinstance(list_name, basestring);
 
-        return { "name": mlist.real_name,
+        mlist = MailList.MailList(list_name, lock=0)
+
+        return { "name": list_name,
+                 "display_name": mlist.real_name,
                  "adversited": mlist.advertised,
                  "web_url": mlist.web_page_url,
-                 "description" : mlist.description
+                 "description" : mlist.description,
+                 "email": mlist.GetListEmail(),
+                 "language": mlist.preferred_language
                }
 
     def lists(self, advertised=True):
@@ -52,20 +51,59 @@ class Mailman():
         output = [ self.list(name) for name in raw_list ]
 
         if advertised:
-            output2 = [ l for l in output if l["adversited"] ]
-            output = output2
+            output = [ l for l in output if l["adversited"] ]
 
         return output
 
+
+    def subscribe(self, list_name, user_email, user_fullname=None):
+
+        assert isinstance(list_name, basestring);
+        assert isinstance(user_email, basestring);
+        assert user_fullname == None or isinstance(user_fullname, basestring);
+
+        # Validate list name
+        known_list_names = [ l["name"] for l in self.lists() ]
+        if list_name not in known_list_names:
+            raise AssertionError("List name should be a string")
+
+        thelist = self.list(list_name)
+
+        # Validate email
+        if user_email == thelist["email"]:
+            raise Exception("Sneaky hacker, you can't subscribe the list to itself ;) !")
+
+        # Canonicalize full name
+        user_fullname = Utils.canonstr(user_fullname)
+
+        try:
+            mlist = MailList.MailList(list_name, lock=1)
+            mlist.AddMember(UserDesc(user_email, user_fullname))
+            mlist.Save()
+        except Errors.MembershipIsBanned:
+            print("membership banned")
+        except Errors.MMBadEmailError:
+            print("bad email")
+        except Errors.MMHostileAddress:
+            print("hostile address")
+        except Errors.MMSubscribeNeedsConfirmation:
+            print("need confirm")
+        except Errors.MMNeedApproval:
+            print("need approval")
+        except Errors.MMAlreadyAMember:
+            print("already member")
+        finally:
+            mlist.Unlock()
+
+        print("returning")
 
 
 def main():
 
     m = Mailman()
 
-    print m.domain()
-    print m.owner()
-    print m.lists()
+    print(m.lists())
+    m.subscribe("mailman", "root@yolo.plop", "Root")
 
 
 

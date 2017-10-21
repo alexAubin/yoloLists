@@ -7,10 +7,6 @@
         <title>{{ pagetitle or "Test" }}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" media="screen">
-        <!--
-        <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="../assets/js/custom.js"></script>
-        -->
     </head>
     <body>
         <div id="content">
@@ -18,5 +14,8 @@
         {% endblock %}
         </div>
 
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/yololists.js') }}"></script>
     </body>
 </html>

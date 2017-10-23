@@ -6,7 +6,7 @@ KISS interface for Mailman2
 Rant
 ----
 
-In 2017, there is still no simple lightweight free/open-source software to host mailing-lists. Solutions like Sympa and Mailman3 are designed for industrial scale of mailing list hosting and are too resource-hungry and/or are too complex for the task they achieve. They are not suitable for self-hosting. A lot of small projects only need a handful of lists with a few hundreds of people max. They shouldn't have to install a software that permanently requires several hundreds megabytes of RAM - just to perform a task similar to mail aliases do.
+In 2017, there is still no simple lightweight, free/open-source software to host mailing-lists. Solutions like Sympa and Mailman3 are designed for industrial scale use cases, and are too resource-hungry and/or too complex for the task they achieve. They are not suitable for self-hosting. A lot of small projects only need a handful of lists with a few hundreds of people max. They shouldn't have to install a software that permanently requires *several hundreds megabytes of RAM* - just to perform a task similar to what mail aliases do.
 
 Meanwhile, Mailman2 remains kinda lightweight and simple (though could be improved..), but lacks a state-of-the-art, KISS web interface. 
 
@@ -21,8 +21,8 @@ Setup :
 ```
 git clone <thisrepo>
 cd yololists
-pip install --upgrade virtualenv
-virtualenv -p python3 venv
+sudo apt-get install python-virtualenv
+virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```

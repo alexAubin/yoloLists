@@ -17,8 +17,8 @@ from Mailman.Logging.Syslog import syslog
 class Mailman():
 
     def __init__(self):
+        self.lists = Utils.list_names()
 
-        pass
 
     def domain(self):
         return Utils.get_domain()
@@ -28,10 +28,15 @@ class Mailman():
         return Utils.get_site_email()
 
 
-    def list(self, list_name):
+    def _list(self, list_name):
         assert isinstance(list_name, basestring)
+        assert list_name in self.lists
 
-        mlist = MailList.MailList(list_name, lock=0)
+        return MailList.MailList(list_name, lock=0)
+
+    def list(self, list_name):
+
+        list = self._list(list_name)
 
         return { "name": list_name,
                  "display_name": mlist.real_name,
@@ -45,10 +50,7 @@ class Mailman():
     def lists(self, advertised=True):
         assert isinstance(advertised, bool)
 
-        raw_list = Utils.list_names()
-        raw_list.sort()
-
-        output = [ self.list(name) for name in raw_list ]
+        output = [ self.list(name) for name in self.lists.sort() ]
 
         if advertised:
             output = [ l for l in output if l["adversited"] ]
@@ -97,6 +99,12 @@ class Mailman():
             raise Exception("UnknownError")
         finally:
             mlist.Unlock()
+
+
+    def admin_cagetories(self, list_name):
+
+        return self._list(list_name).GetConfigCategories()
+
 
 def main():
 

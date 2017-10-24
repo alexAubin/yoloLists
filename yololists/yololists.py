@@ -1,8 +1,10 @@
 
 from flask import Flask, render_template, jsonify, request
 from mailman import Mailman
+from HTMLParser import HTMLParser
 
 app = Flask(__name__)
+h = HTMLParser()
 
 
 @app.route('/')
@@ -49,3 +51,18 @@ def subscribe():
     else:
         message = "Cool! Please check your inbox to proceed with the confirmation ;)."
         return jsonify({ "status": "OK", "message": message })
+
+
+@app.route('/admin')
+def admin():
+
+    data = { "categories":
+            [ { "name":k, "display_name": h.unescape(v[0]) }
+                for k, v in Mailman().admin_cagetories("mailman").items() ] }
+
+    print Mailman().admin_cagetories("mailman")
+
+    return render_template("admin.html", **data)
+
+
+

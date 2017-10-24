@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="content" class="container" style="max-width:1200px">
+
+
+<div class="page-header" id="banner">
+    <div class="row text-center">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <span class="glyphicon glyphicon-envelope" aria-hidden="true" style="font-size:6em;"></span>
+            <h1 style="margin-top:-0.2em">my.domain.tld</h1>
+            <h3 style="margin-top:-0.2em">Mailing-lists administration</h3>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="list-group">
+<div class="row">
+<div class="col-sm-3">
+
+
+
+<div class="list-group">
+{% for category in categories %}
+  <a href="admin/{{ category.name }}" class="list-group-item">{{ category.display_name }}</a>
+{% endfor %}
+</div>
+
+
+<div class="col-sm-9">
+</div>
+
+
+</div>
+</div>
+</div>
+
+
+</div>
+
+
+{% endblock %}

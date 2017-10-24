@@ -106,6 +106,29 @@ class Mailman():
         return self._list(list_name).GetConfigCategories()
 
 
+    def admin_category_view(self, list_name, category):
+
+        category_view = self._list(list_name).GetConfigInfo(category, "")
+
+        # Pop the title
+        title = category_view[0]
+        category_view = category_view[1:]
+
+        # Init a clean directory to decribe the view
+        category_view_clean = { "title": title, "subsubcats": []}
+
+        # Find each subsubcategory title and add the options...
+        i = -1
+        for line in category_view:
+            if isinstance(line, basestring):
+                category_view_clean["subsubcats"].append({"title": line, "options": []})
+                i = i+1
+            else:
+                category_view_clean["subsubcats"][i]["options"].append(line)
+
+        return category_view_clean
+
+
 def main():
 
     m = Mailman()

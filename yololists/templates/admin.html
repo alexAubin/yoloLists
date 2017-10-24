@@ -17,25 +17,37 @@
 
 
 
-<div class="list-group">
 <div class="row">
+
+
+
 <div class="col-sm-3">
-
-
-
 <div class="list-group">
 {% for category in categories %}
   <a href="admin/{{ category.name }}" class="list-group-item">{{ category.display_name }}</a>
 {% endfor %}
 </div>
+</div>
+
 
 
 <div class="col-sm-9">
-</div>
+    <h3>{{ current_category.title }}</h3>
+
+
+    {% for subsubcat in current_category.subsubcats  %}
+    <h4>{{ subsubcat.title }}</h4>
+    {% for option in subsubcat.options %}
+        <p>{{ option[4] }}</p>
+    {% endfor %}
+    {% endfor %}
 
 
 </div>
-</div>
+
+
+
+
 </div>
 
 

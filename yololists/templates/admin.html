@@ -38,7 +38,7 @@
     {% for subsubcat in current_category.subsubcats  %}
     <h4>{{ subsubcat.title }}</h4>
     {% for option in subsubcat.options %}
-        <p>{{ option[4] }}</p>
+        <p>{{ option.description }}</p>
     {% endfor %}
     {% endfor %}
 

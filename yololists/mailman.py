@@ -124,7 +124,15 @@ class Mailman():
                 category_view_clean["subsubcats"].append({"title": line, "options": []})
                 i = i+1
             else:
-                category_view_clean["subsubcats"][i]["options"].append(line)
+                option = { "name": line[0],
+                           "kind": line[1],
+                           "params": line[2],
+                           "dependencies": line[3],
+                           "description": line[4],
+                         }
+
+                option["elaboration"] = line[5] if len(line) == 6 else None
+                category_view_clean["subsubcats"][i]["options"].append(option)
 
         return category_view_clean
 

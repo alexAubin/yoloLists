@@ -61,10 +61,9 @@ def admin():
     data = { "categories":
             [ { "name":k, "display_name": h.unescape(v[0]) }
                 for k, v in Mailman().admin_cagetories(list_name).items() ],
-             "current_category": Mailman().admin_category_view(list_name, "general")
+             "current_category": Mailman().admin_category_view(list_name,
+                 "general")
            }
-
-    print data["current_category"]["title"]
 
     return render_template("admin.html", **data)
 

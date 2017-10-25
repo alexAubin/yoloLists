@@ -32,14 +32,62 @@
 
 
 <div class="col-sm-9">
-    <h3>{{ current_category.title }}</h3>
+    <h3>General options</h3>
+    <h5>{{ current_category.title }}</h5>
 
 
     {% for subsubcat in current_category.subsubcats  %}
-    <h4>{{ subsubcat.title }}</h4>
-    {% for option in subsubcat.options %}
-        <p>{{ option.description }}</p>
-    {% endfor %}
+
+    <form class="form-horizontal">
+        <fieldset>
+           <legend>{{ subsubcat.title|safe }}</legend>
+            <div class="well">
+            {% for option in subsubcat.options %}
+            <div class="form-group">
+                <label for="option/{{ option.name }}" class="col-sm-3 control-label">{{ option.name }}</label>
+                <div class="col-sm-9">
+                    {% if option.type == "String" 
+                       or option.type == "Host"
+                       or option.type == "Email"
+                       or option.type == "Number"
+                    %}
+                    <input class="form-control" id="option/{{ option.name }}" value="{{ option.value }}" size={{ option.params }}>
+                    {% elif option.type == "EmailList" %}
+                    <textarea class="form-control" id="option/{{ option.name }}" rows="3" id="textArea">
+{% for line in option.value %}{{ line }}
+{% endfor %}</textarea>
+                    {% elif option.type == "Text" %}
+                    <textarea class="form-control" id="option/{{ option.name }}" rows="3" id="textArea">{{ option.value }}</textarea>
+                    {% elif option.type == "Radio" %}
+                        {% for choice in option.params %}
+                        <div class="radio">
+                            <label>
+                                <input name="{{ option.name }}" value="{{ loop.index }}" type="radio">
+                                {{ choice }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% elif option.type == "Checkbox" %}
+                        {% for option_name in option.params[0] %}
+                        <div class="checkbox">
+                            <label>
+                                <input name="{{ option.params[3][loop.index] }}" value="{{ loop.index }}" type="checkbox">
+                                {{ option_name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <p style="color:#f33;">{{ option.type }}</p>
+                    <p style="color:#f33;">{{ option.params }}</p>
+                    <p style="color:#f33;">{{ option.value }}</p>
+                    {% endif %}
+                    <span class="help-block">{{ option.description|safe }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+        </fieldset>
+    </form>
     {% endfor %}
 
 

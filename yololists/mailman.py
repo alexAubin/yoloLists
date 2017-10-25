@@ -12,6 +12,27 @@ from Mailman.UserDesc import UserDesc
 from Mailman.htmlformat import *
 from Mailman.Logging.Syslog import syslog
 
+# Arrange option types in a nice integer-indexed dict...
+option_types_raw = ["Radio",
+                    "Toggle",
+                    "String",
+                    "Email",
+                    "Host",
+                    "Number",
+                    "Text",
+                    "EmailList",
+                    "EmailListEx",
+                    "FileUpload",
+                    "Select",
+                    "Topics",
+                    "HeaderFilter",
+                    "Checkbox"]
+option_types = {}
+
+for option_type in option_types_raw:
+    id_ = getattr(mm_cfg, option_type)
+    option_types[id_] = option_type
+
 
 
 class Mailman():
@@ -108,7 +129,9 @@ class Mailman():
 
     def admin_category_view(self, list_name, category):
 
-        category_view = self._list(list_name).GetConfigInfo(category, "")
+        l = self._list(list_name)
+
+        category_view = l.GetConfigInfo(category, "")
 
         # Pop the title
         title = category_view[0]
@@ -124,14 +147,22 @@ class Mailman():
                 category_view_clean["subsubcats"].append({"title": line, "options": []})
                 i = i+1
             else:
+                # If this does not pass then meh, check admin.py in Mailman code
+                # around line 660 :|
+                assert hasattr(l, line[0])
+                assert len(line) >= 5
+
                 option = { "name": line[0],
-                           "kind": line[1],
+                           "type": option_types[line[1]],
                            "params": line[2],
-                           "dependencies": line[3],
+                           # This stuff is pretty useless ? Not clear in
+                           # Mailman's code if it's even used...
+                           #"dependencies": line[3],
                            "description": line[4],
+                           "value" : getattr(l, line[0])
                          }
 
-                option["elaboration"] = line[5] if len(line) == 6 else None
+                option["extra_description"] = line[5] if len(line) >= 6 else None
                 category_view_clean["subsubcats"][i]["options"].append(option)
 
         return category_view_clean

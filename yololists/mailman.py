@@ -17,7 +17,8 @@ from Mailman.Logging.Syslog import syslog
 class Mailman():
 
     def __init__(self):
-        self.lists = Utils.list_names()
+        self._lists = Utils.list_names()
+        self._lists.sort()
 
 
     def domain(self):
@@ -30,27 +31,27 @@ class Mailman():
 
     def _list(self, list_name):
         assert isinstance(list_name, basestring)
-        assert list_name in self.lists
+        assert list_name in self._lists
 
         return MailList.MailList(list_name, lock=0)
 
     def list(self, list_name):
 
-        list = self._list(list_name)
+        l = self._list(list_name)
 
         return { "name": list_name,
-                 "display_name": mlist.real_name,
-                 "adversited": bool(mlist.advertised),
-                 "web_url": mlist.web_page_url,
-                 "description" : mlist.description,
-                 "email": mlist.GetListEmail(),
-                 "language": mlist.preferred_language
+                 "display_name": l.real_name,
+                 "adversited": bool(l.advertised),
+                 "web_url": l.web_page_url,
+                 "description" : l.description,
+                 "email": l.GetListEmail(),
+                 "language": l.preferred_language
                }
 
     def lists(self, advertised=True):
         assert isinstance(advertised, bool)
 
-        output = [ self.list(name) for name in self.lists.sort() ]
+        output = [ self.list(name) for name in self._lists ]
 
         if advertised:
             output = [ l for l in output if l["adversited"] ]
@@ -64,8 +65,7 @@ class Mailman():
         assert isinstance(user_fullname, basestring)
 
         # Validate list name
-        known_list_names = [ l["name"] for l in self.lists() ]
-        if list_name not in known_list_names:
+        if list_name not in self._lists:
             raise Exception("UnknownList")
 
         # Get the list

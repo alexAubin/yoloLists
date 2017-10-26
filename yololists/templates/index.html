@@ -50,30 +50,29 @@
 <div class="modal-content">
     <!-- Header -->
     <div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="modal-title">Subscribe to <span class="modal-subscribe-list-display-name"></span> ?</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Join people on <span class="modal-subscribe-list-display-name"></span> by entering your email adress !</h4>
     </div>
     <!-- Body -->
     <form id="modal-subscribe-form" class="form-group">
     <div class="modal-body">
-		<p>Join people on <span class="modal-subscribe-list-display-name"></span> by entering your email adress !<br>
-		<div class="form-group">
-			<input name="list-name" type="text"  style="display:none;">
-			<input name="email"     type="email" class="form-control" placeholder="you@domain.tld" required>
-			<input name="antispam"  type="text"  style="display:none;">
-		</div>
-        <p id="modal-subscribe-answer"></p>
+        <div class="form-group">
+            <input name="list-name" type="text"  style="display:none;">
+            <div class="input-group">
+                <input name="email"     type="email" class="form-control" placeholder="you@domain.tld" required>
+                <span class="input-group-btn">
+                <button id="modal-subscribe-submit" type="submit" class="btn btn-success"
+                        data-loading-text="<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Subscribing">
+                Subscribe
+                </button>
+                </span>
+            </div>
+            <input name="antispam"  type="text"  style="display:none;">
+        </div>
     </div>
     <!-- Footer -->
     <div class="modal-footer">
-    <div class="col-lg-10 col-lg-offset-2">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button id="modal-subscribe-submit" type="submit" class="btn btn-success" 
-                data-loading-text="<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Subscribing">
-		Subscribe
-		</button>
-    </div>
-    </div>
+        <p id="modal-subscribe-answer"></p>
     </form>
 </div>
 </div>

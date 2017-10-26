@@ -68,6 +68,7 @@ def admin(category="general", subcategory=None):
     assert category in [ c["name"] for c in all_categories ]
 
     this_category_view = Mailman().admin_category_view(list_name, category)
+    this_category_view["name"]          = category
     this_category_view["display_title"] = this_category["display_name"]
 
     data = { "categories": all_categories,

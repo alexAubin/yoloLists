@@ -24,7 +24,12 @@
 <div class="col-sm-3">
 <div class="list-group">
 {% for category in categories %}
-  <a href="/admin/{{ category.name }}" class="list-group-item">{{ category.display_name }}</a>
+    <a href="/admin/{{ category.name }}"
+       class="list-group-item
+       {% if current_category.name == category.name%} active {% endif %}
+       ">
+       {{ category.display_name }}
+    </a>
 {% endfor %}
 </div>
 </div>
@@ -45,15 +50,17 @@
 
     {% for option in subsubcat.options %}
     <div class="form-group">
-    <label class="col-sm-3 control-label"
+    <label class="col-sm-3 control-label text-right"
            for="option/{{ option.name }}"
            {% if option.extra_description %}
-           data-toggle="tooltip" data-placement="bottom"
-                                 title="{{ option.extra_description }}"
-                                 {% endif %}
-                                 >
-                                 {{ option.display_name }}
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="{{ option.extra_description }}"
+           {% endif %}
+           >
+           {{ option.display_name }}
     </label>
+
     <div class="col-sm-9">
 
 
@@ -100,7 +107,7 @@
         {% elif option.type == "Toggle" %}
             <div class="btn-group btn-toggle" data-toggle="buttons">
             {% if option.value == 0 %}
-                <label class="btn btn-primary active">
+                <label class="btn btn-info active">
             {% else %}
                 <label class="btn btn-default">
             {% endif %}
@@ -109,7 +116,7 @@
             {% if option.value == 0 %}
                 <label class="btn btn-default">
             {% else %}
-                <label class="btn btn-primary active">
+                <label class="btn btn-info active">
             {% endif %}
                     <input name="options" value="1" type="radio">{{ option.params[1] }}
                 </label>

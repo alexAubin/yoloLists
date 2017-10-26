@@ -1,5 +1,6 @@
 # No lock needed in this script, because we don't change data.
 
+import string
 import os
 import cgi
 import time
@@ -153,6 +154,7 @@ class Mailman():
                 assert len(line) >= 5
 
                 option = { "name": line[0],
+                           "display_name": string.capwords(line[0].replace('_', ' ')),
                            "type": option_types[line[1]],
                            "params": line[2],
                            # This stuff is pretty useless ? Not clear in
@@ -161,6 +163,12 @@ class Mailman():
                            "description": line[4],
                            "value" : getattr(l, line[0])
                          }
+                option["display_name"] = option["display_name"].replace("Msg", "Message")
+                if (option["type"] == "Radio" and len(option["params"]) == 2):
+                    option["type"] = "Toggle"
+
+                if (option["type"] == "Toggle" and isinstance(option["value"], bool)):
+                    option["value"] = int(option["value"])
 
                 option["extra_description"] = line[5] if len(line) >= 6 else None
                 category_view_clean["subsubcats"][i]["options"].append(option)

@@ -44,9 +44,10 @@
             <div class="well">
             {% for option in subsubcat.options %}
             <div class="form-group">
-                <label for="option/{{ option.name }}" class="col-sm-3 control-label">{{ option.name }}</label>
+                <label for="option/{{ option.name }}" class="col-sm-3
+                    control-label">{{ option.display_name }}</label>
                 <div class="col-sm-9">
-                    {% if option.type == "String" 
+                    {% if option.type == "String"
                        or option.type == "Host"
                        or option.type == "Email"
                        or option.type == "Number"
@@ -76,6 +77,23 @@
                             </label>
                         </div>
                         {% endfor %}
+                    {% elif option.type == "Toggle" %}
+                        <div class="btn-group btn-toggle" data-toggle="buttons">
+                            {% if option.value == 0 %}
+                            <label class="btn btn-primary active">
+                            {% else %}
+                            <label class="btn btn-default">
+                            {% endif %}
+                                <input name="options" value="0" type="radio">{{ option.params[0] }}
+                            </label>
+                            {% if option.value == 0 %}
+                            <label class="btn btn-default">
+                            {% else %}
+                            <label class="btn btn-primary active">
+                            {% endif %}
+                                <input name="options" value="1" type="radio">{{ option.params[1] }}
+                            </label>
+                        </div>
                     {% else %}
                     <p style="color:#f33;">{{ option.type }}</p>
                     <p style="color:#f33;">{{ option.params }}</p>

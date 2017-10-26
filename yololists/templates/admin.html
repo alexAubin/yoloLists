@@ -24,88 +24,107 @@
 <div class="col-sm-3">
 <div class="list-group">
 {% for category in categories %}
-  <a href="admin/{{ category.name }}" class="list-group-item">{{ category.display_name }}</a>
+  <a href="/admin/{{ category.name }}" class="list-group-item">{{ category.display_name }}</a>
 {% endfor %}
 </div>
 </div>
 
-
-
 <div class="col-sm-9">
-    <h3>General options</h3>
-    <h5>{{ current_category.title }}</h5>
-
+    <div class="row text-center">
+    <h3>{{ current_category.display_title }}</h3>
+    <h5>{{ current_category.description|safe }}</h5>
+    </div>
 
     {% for subsubcat in current_category.subsubcats  %}
+    <div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ subsubcat.title|safe }}</h3>
+    </div>
+    <div class="panel-body well">
 
-    <form class="form-horizontal">
-        <fieldset>
-           <legend>{{ subsubcat.title|safe }}</legend>
-            <div class="well">
-            {% for option in subsubcat.options %}
-            <div class="form-group">
-                <label for="option/{{ option.name }}" class="col-sm-3
-                    control-label">{{ option.display_name }}</label>
-                <div class="col-sm-9">
-                    {% if option.type == "String"
-                       or option.type == "Host"
-                       or option.type == "Email"
-                       or option.type == "Number"
-                    %}
-                    <input class="form-control" id="option/{{ option.name }}" value="{{ option.value }}" size={{ option.params }}>
-                    {% elif option.type == "EmailList" %}
-                    <textarea class="form-control" id="option/{{ option.name }}" rows="3" id="textArea">
-{% for line in option.value %}{{ line }}
-{% endfor %}</textarea>
-                    {% elif option.type == "Text" %}
-                    <textarea class="form-control" id="option/{{ option.name }}" rows="3" id="textArea">{{ option.value }}</textarea>
-                    {% elif option.type == "Radio" %}
-                        {% for choice in option.params %}
-                        <div class="radio">
-                            <label>
-                                <input name="{{ option.name }}" value="{{ loop.index }}" type="radio">
-                                {{ choice }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                    {% elif option.type == "Checkbox" %}
-                        {% for option_name in option.params[0] %}
-                        <div class="checkbox">
-                            <label>
-                                <input name="{{ option.params[3][loop.index] }}" value="{{ loop.index }}" type="checkbox">
-                                {{ option_name }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                    {% elif option.type == "Toggle" %}
-                        <div class="btn-group btn-toggle" data-toggle="buttons">
-                            {% if option.value == 0 %}
-                            <label class="btn btn-primary active">
-                            {% else %}
-                            <label class="btn btn-default">
-                            {% endif %}
-                                <input name="options" value="0" type="radio">{{ option.params[0] }}
-                            </label>
-                            {% if option.value == 0 %}
-                            <label class="btn btn-default">
-                            {% else %}
-                            <label class="btn btn-primary active">
-                            {% endif %}
-                                <input name="options" value="1" type="radio">{{ option.params[1] }}
-                            </label>
-                        </div>
-                    {% else %}
-                    <p style="color:#f33;">{{ option.type }}</p>
-                    <p style="color:#f33;">{{ option.params }}</p>
-                    <p style="color:#f33;">{{ option.value }}</p>
-                    {% endif %}
-                    <span class="help-block">{{ option.description|safe }}</span>
-                </div>
+
+    {% for option in subsubcat.options %}
+    <div class="form-group">
+    <label class="col-sm-3 control-label"
+           for="option/{{ option.name }}"
+           {% if option.extra_description %}
+           data-toggle="tooltip" data-placement="bottom"
+                                 title="{{ option.extra_description }}"
+                                 {% endif %}
+                                 >
+                                 {{ option.display_name }}
+    </label>
+    <div class="col-sm-9">
+
+
+        {% if option.type == "String"
+           or option.type == "Host"
+           or option.type == "Email"
+           or option.type == "Number"
+        %}
+            <input class="form-control"
+                   id="option/{{ option.name }}"
+                   value="{{ option.value }}"
+                   size={{ option.params }}>
+
+
+        {% elif option.type == "EmailList"
+        or   option.type == "Text" %}
+            <textarea class="form-control" rows="4"
+                id="option/{{ option.name }}" >{%
+                if option.value is iterable and option.value is not string %}{%
+                for line in option.value                                   %}{%
+                if loop.index %}{{ '\n' }}{% endif %}{{ line }}{% endfor   %}{%
+                else %}{{ option.value }}{% endif %}</textarea>
+
+
+        {% elif option.type == "Select" %}
+            <select class="form-control" id="select">
+                {% for choice in option.params %}
+                <option value={{ loop.index }}>{{ choice }}</option>
+                {% endfor %}
+            </select>
+
+
+        {% elif option.type == "Checkbox" %}
+            {% for option_name in option.params[0] %}
+            <div class="checkbox">
+                <label>
+                    <input name="{{ option.params[3][loop.index] }}" value="{{ loop.index }}" type="checkbox">
+                    {{ option_name }}
+                </label>
             </div>
             {% endfor %}
+
+
+        {% elif option.type == "Toggle" %}
+            <div class="btn-group btn-toggle" data-toggle="buttons">
+            {% if option.value == 0 %}
+                <label class="btn btn-primary active">
+            {% else %}
+                <label class="btn btn-default">
+            {% endif %}
+                    <input name="options" value="0" type="radio">{{ option.params[0] }}
+                </label>
+            {% if option.value == 0 %}
+                <label class="btn btn-default">
+            {% else %}
+                <label class="btn btn-primary active">
+            {% endif %}
+                    <input name="options" value="1" type="radio">{{ option.params[1] }}
+                </label>
             </div>
-        </fieldset>
-    </form>
+        {% else %}
+        <p style="color:#f33;">{{ option.type }}</p>
+        <p style="color:#f33;">{{ option.params }}</p>
+        <p style="color:#f33;">{{ option.value }}</p>
+        {% endif %}
+        <span class="help-block">{{ option.description|safe }}</span>
+    </div>
+    </div>
+    {% endfor %}
+    </div>
+    </div>
     {% endfor %}
 
 

@@ -4,14 +4,18 @@ import string
 import os
 import cgi
 import time
-
 import sys
 sys.path.append("/usr/lib/mailman/")
+
+from HTMLParser import HTMLParser
+
 
 from Mailman import mm_cfg, Utils, MailList, Errors
 from Mailman.UserDesc import UserDesc
 from Mailman.htmlformat import *
 from Mailman.Logging.Syslog import syslog
+
+h = HTMLParser()
 
 # Arrange option types in a nice integer-indexed dict...
 option_types_raw = ["Radio",
@@ -125,24 +129,38 @@ class Mailman():
 
     def admin_cagetories(self, list_name):
 
-        return self._list(list_name).GetConfigCategories()
+        raw_categories = self._list(list_name).GetConfigCategories()
+
+        return [ { "name":k, "display_name": h.unescape(v[0]) }
+                 for k, v in raw_categories.items() ]
 
 
     def admin_category_view(self, list_name, category):
+
+        # These need special treatment :|
+        if category == "members":
+            pass
+        if category == "passwords":
+            pass
 
         l = self._list(list_name)
 
         category_view = l.GetConfigInfo(category, "")
 
-        # Pop the title
-        title = category_view[0]
+        # Pop the description
+        description = category_view[0]
         category_view = category_view[1:]
 
         # Init a clean directory to decribe the view
-        category_view_clean = { "title": title, "subsubcats": []}
+        category_view_clean = { "description": description,
+                                "subsubcats": [] }
 
         # Find each subsubcategory title and add the options...
+        if not isinstance(category_view[0], basestring):
+            category_view = [""] + category_view
+
         i = -1
+
         for line in category_view:
             if isinstance(line, basestring):
                 category_view_clean["subsubcats"].append({"title": line, "options": []})
@@ -150,7 +168,7 @@ class Mailman():
             else:
                 # If this does not pass then meh, check admin.py in Mailman code
                 # around line 660 :|
-                assert hasattr(l, line[0])
+
                 assert len(line) >= 5
 
                 option = { "name": line[0],
@@ -161,11 +179,15 @@ class Mailman():
                            # Mailman's code if it's even used...
                            #"dependencies": line[3],
                            "description": line[4],
-                           "value" : getattr(l, line[0])
+                           "value": getattr(l, line[0]) if hasattr(l, line[0]) else "?"
                          }
+
                 option["display_name"] = option["display_name"].replace("Msg", "Message")
-                if (option["type"] == "Radio" and len(option["params"]) == 2):
-                    option["type"] = "Toggle"
+                if option["type"] == "Radio":
+                    if len(option["params"]) == 2:
+                        option["type"] = "Toggle"
+                    else:
+                        option["type"] = "Select"
 
                 if (option["type"] == "Toggle" and isinstance(option["value"], bool)):
                     option["value"] = int(option["value"])

@@ -1,10 +1,8 @@
 
 from flask import Flask, render_template, jsonify, request
 from mailman import Mailman
-from HTMLParser import HTMLParser
 
 app = Flask(__name__)
-h = HTMLParser()
 
 
 @app.route('/')
@@ -53,17 +51,27 @@ def subscribe():
         return jsonify({ "status": "OK", "message": message })
 
 
-@app.route('/admin')
-def admin():
+@app.route('/admin/')
+@app.route('/admin/<category>/')
+@app.route('/admin/<category>/<subcategory>/')
+def admin(category="general", subcategory=None):
 
     list_name = "mailman"
 
-    data = { "categories":
-            [ { "name":k, "display_name": h.unescape(v[0]) }
-                for k, v in Mailman().admin_cagetories(list_name).items() ],
-             "current_category": Mailman().admin_category_view(list_name,
-                 "general")
-           }
+    all_categories = Mailman().admin_cagetories(list_name)
+
+    for c in all_categories:
+        if c["name"] == category:
+            this_category = c
+            break
+
+    assert category in [ c["name"] for c in all_categories ]
+
+    this_category_view = Mailman().admin_category_view(list_name, category)
+    this_category_view["display_title"] = this_category["display_name"]
+
+    data = { "categories": all_categories,
+             "current_category": this_category_view }
 
     return render_template("admin.html", **data)
 

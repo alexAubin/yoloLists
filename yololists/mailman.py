@@ -131,8 +131,23 @@ class Mailman():
 
         l = self._list(list_name)
 
-        members = [ m.encode() for m in l.getMembers() ]
-        members.sort(lambda x, y: cmp(x.lower(), y.lower()))
+        member_addresses = [ m.encode() for m in l.getMembers() ]
+        member_addresses.sort(lambda x, y: cmp(x.lower(), y.lower()))
+
+        members = []
+        for address in member_addresses:
+            member = { "address":  address,
+                       "fullname": l.getMemberName(address),
+                       "nomail":   l.getDeliveryStatus(address),
+                       "mod":      l.getMemberOption(address, mm_cfg.Moderate),
+                       "hide":     l.getMemberOption(address, mm_cfg.OPTINFO["hide"]),
+                       "ack":      l.getMemberOption(address, mm_cfg.OPTINFO["ack"]),
+                       "notmetoo": l.getMemberOption(address, mm_cfg.OPTINFO["notmetoo"]),
+                       "nodupes":  l.getMemberOption(address, mm_cfg.OPTINFO["nodupes"]),
+                       "plain":    l.getMemberOption(address, mm_cfg.OPTINFO["plain"]),
+                       "lang":     l.getMemberLanguage(address)
+                     }
+            members.append(member)
 
         return members
 

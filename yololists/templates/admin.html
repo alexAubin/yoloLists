@@ -57,6 +57,7 @@
                data-placement="bottom"
                title="{{ option.extra_description }}"
            {% endif %}
+           style="margin-top:0.5em;"
            >
            {{ option.display_name }}
     </label>
@@ -107,16 +108,16 @@
         {% elif option.type == "Toggle" %}
             <div class="btn-group btn-toggle" data-toggle="buttons">
             {% if option.value == 0 %}
-                <label class="btn btn-info active">
+                <label class="btn btn-sm btn-info active">
             {% else %}
-                <label class="btn btn-default">
+                <label class="btn btn-sm btn-default">
             {% endif %}
                     <input name="options" value="0" type="radio">{{ option.params[0] }}
                 </label>
             {% if option.value == 0 %}
-                <label class="btn btn-default">
+                <label class="btn btn-sm btn-default">
             {% else %}
-                <label class="btn btn-info active">
+                <label class="btn btn-sm btn-info active">
             {% endif %}
                     <input name="options" value="1" type="radio">{{ option.params[1] }}
                 </label>

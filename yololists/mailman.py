@@ -71,7 +71,8 @@ class Mailman():
                  "web_url": l.web_page_url,
                  "description" : l.description,
                  "email": l.GetListEmail(),
-                 "language": l.preferred_language
+                 "language": l.preferred_language,
+                 "n_members": len(l.getMembers())
                }
 
     def lists(self, advertised=True):
@@ -83,7 +84,6 @@ class Mailman():
             output = [ l for l in output if l["adversited"] ]
 
         return output
-
 
     def subscribe(self, list_name, user_email, user_fullname=""):
         assert isinstance(list_name, basestring)
@@ -125,6 +125,16 @@ class Mailman():
             raise Exception("UnknownError")
         finally:
             mlist.Unlock()
+
+
+    def members(self, list_name):
+
+        l = self._list(list_name)
+
+        members = [ m.encode() for m in l.getMembers() ]
+        members.sort(lambda x, y: cmp(x.lower(), y.lower()))
+
+        return members
 
 
     def admin_cagetories(self, list_name):

@@ -77,4 +77,9 @@ def admin(category="general", subcategory=None):
     return render_template("admin.html", **data)
 
 
+@app.route('/members/')
+def members():
 
+    list_name = "mailman"
+
+    return jsonify(Mailman().members(list_name))

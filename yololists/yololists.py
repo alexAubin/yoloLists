@@ -58,6 +58,23 @@ def admin(category="general", subcategory=None):
 
     list_name = "mailman"
 
+    navbar = { "main":      [ ("general",    "General"   ),
+                              ("members",    "Members"   ),
+                              ("moderation", "Moderation"),
+                              ("nondigest",  "Delivery"  ),
+                              ("privacy",    "Privacy"   )
+                            ],
+               "advanced" : [ ("language",   "Languages" ),
+                              ("archive",    "Archives"  ),
+                              ("digest",     "Digests"   ),
+                              ("passwords",  "Security"  ),
+                              ("bouce",      "Boucing"   ),
+                              ("autoreply",  "Auto-reply"),
+                              ("topics",     "Topics"    )
+                             ]
+             }
+
+
     all_categories = Mailman().admin_cagetories(list_name)
 
     for c in all_categories:
@@ -71,7 +88,8 @@ def admin(category="general", subcategory=None):
     this_category_view["name"]          = category
     this_category_view["display_title"] = this_category["display_name"]
 
-    data = { "categories": all_categories,
+    data = { "navbar": navbar,
+             "categories": all_categories,
              "current_category": this_category_view }
 
     return render_template("admin.html", **data)

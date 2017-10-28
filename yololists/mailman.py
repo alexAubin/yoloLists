@@ -1,5 +1,3 @@
-# No lock needed in this script, because we don't change data.
-
 import string
 import os
 import cgi
@@ -55,11 +53,11 @@ class Mailman():
         return Utils.get_site_email()
 
 
-    def _list(self, list_name):
+    def _list(self, list_name, withLock=False):
         assert isinstance(list_name, basestring)
         assert list_name in self._lists
 
-        return MailList.MailList(list_name, lock=0)
+        return MailList.MailList(list_name, lock=int(withLock))
 
     def list(self, list_name):
 
@@ -95,6 +93,7 @@ class Mailman():
             raise Exception("UnknownList")
 
         # Get the list
+        l = self._list(list_name, withLock=True)
         the_list = self.list(list_name)
 
         # Validate email
@@ -105,9 +104,8 @@ class Mailman():
         user_fullname = Utils.canonstr(user_fullname)
 
         try:
-            mlist = MailList.MailList(list_name, lock=1)
-            mlist.AddMember(UserDesc(user_email, user_fullname))
-            mlist.Save()
+            l.AddMember(UserDesc(user_email, user_fullname))
+            l.Save()
             return "OK"
         except Errors.MembershipIsBanned:
             raise Exception("MemberBanned")
@@ -124,7 +122,7 @@ class Mailman():
         except Exception as e:
             raise Exception("UnknownError")
         finally:
-            mlist.Unlock()
+            l.Unlock()
 
 
     def members(self, list_name):
@@ -150,6 +148,27 @@ class Mailman():
             members.append(member)
 
         return members
+
+
+    def get_held_messages(self, list_name):
+
+        l = self._list(list_name, withLock=True)
+
+        raw_messages = l.GetHeldMessageIds()
+
+        messages = []
+        for message in raw_messages:
+            r = l.GetRecord(message)
+            messages.append({ "received": r[5]['received_time'],
+                              "sender": r[1],
+                              "title": r[2],
+                              "why": r[3],
+                              "rejection_notice": r[5]['rejection_notice'],
+                            })
+
+        l.Unlock()
+
+        return messages
 
 
     def admin_cagetories(self, list_name):
@@ -221,16 +240,3 @@ class Mailman():
                 category_view_clean["subsubcats"][i]["options"].append(option)
 
         return category_view_clean
-
-
-def main():
-
-    m = Mailman()
-
-    print(m.lists())
-    m.subscribe("mailman", "root@yolo.plop", "Root")
-
-
-
-if __name__ == "__main__":
-    main()

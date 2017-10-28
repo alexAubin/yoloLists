@@ -104,3 +104,11 @@ def members():
            }
 
     return render_template("members.html", **data)
+
+
+@app.route('/moderation/')
+def moderation():
+
+    list_name = "mailman"
+
+    return jsonify(Mailman().get_held_messages(list_name))

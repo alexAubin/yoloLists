@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div id="content" class="container" style="max-width:800px">
+
+
+<div class="row">
+	<div class="col-sm-12">
+
+
+<table class="table table-striped table-hover ">
+  <thead>
+    <tr>
+      <th>Address</th>
+      <th>Full name</th>
+      <th class="text-center">Posting</th>
+      <th class="text-center">Delivery</th>
+      <th class="advanced-member-option">No dupes</th>
+      <th class="advanced-member-option">Not me too</th>
+      <th class="advanced-member-option">Plain</th>
+      <th class="advanced-member-option">Ack</th>
+      <th class="advanced-member-option">Lang</th>
+      <th style="border:none;"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for member in members %}
+    <tr>
+      <td>{{ member.address }}</td>
+      <td>{% if member.fullname %}{{ member.fullname }}{% endif %}</td>
+      <td class="text-center">
+         {% if member.mod %}
+		 	<a href="#" class="btn btn-xs btn-warning">Moderated</a>
+         {% else %}
+		 	<a href="#" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+         {% endif %}
+      </td>
+      <td class="text-center">
+         {% if not member.nomail %}
+		 	<a href="#" class="btn btn-xs btn-warning">Blocked</a>
+         {% else %}
+		 	<a href="#" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+         {% endif %}
+      </td>
+      <td class="advanced-member-option">{{ member.nodupes }}</td>
+      <td class="advanced-member-option">{{ member.notmetoo }}</td>
+      <td class="advanced-member-option">{{ member.plain }}</td>
+      <td class="advanced-member-option">{{ member.ack }}</td>
+      <td class="advanced-member-option">{{ member.lang }}</td>
+      <td style="border:none; background-color:#fff">
+		 	<a href="#" class="btn btn-xs btn-danger" title="Resiliate?"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table> 
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12 text-center">
+        <span id="toggle-advanced-member-options">
+            <a href="#" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Show more</a>
+            <a href="#" class="btn btn-sm btn-info" style="display:none;"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span> Show less</a>
+        </span>
+	</div>
+</div>
+
+
+
+
+
+</div>
+
+
+
+{% endblock %}

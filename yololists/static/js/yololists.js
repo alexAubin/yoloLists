@@ -74,3 +74,8 @@ $('.btn-toggle').click(function() {
     $(this).find('.btn').toggleClass('btn-default');
 
 });
+
+$( "#toggle-advanced-member-options" ).click(function() {
+    $( ".advanced-member-option" ).toggle();
+    $(this).find("a").toggle();
+});

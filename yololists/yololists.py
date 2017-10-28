@@ -100,4 +100,7 @@ def members():
 
     list_name = "mailman"
 
-    return jsonify(Mailman().members(list_name))
+    data = { "members" : Mailman().members(list_name)
+           }
+
+    return render_template("members.html", **data)
